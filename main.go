@@ -31,8 +31,13 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("Port is open, lets try to send VRFY command")
-	fmt.Fprintf(conn, "VRFY %s", paramUsername)
+
+	//If connection is fine, read and print banner
+	banner, err := bufio.NewReader(conn).ReadString('\n')
+	fmt.Println(banner)
+
+	//Try to verify user existence
+	conn.Write([]byte("VRFY " + paramUsername + "\n"))
 	status, err := bufio.NewReader(conn).ReadString('\n')
 	fmt.Println(status)
 	conn.Close()

@@ -33,7 +33,7 @@ func main() {
 	}
 	fmt.Println("Port is open, lets try to send VRFY command")
 	fmt.Fprintf(conn, "VRFY %s", paramUsername)
-	status, err := bufio.NewReader(conn).ReadString("\n")
-	fmt.Ptintln(status)
+	status, err := bufio.NewReader(conn).ReadString('\n')
+	fmt.Println(status)
 	conn.Close()
 }

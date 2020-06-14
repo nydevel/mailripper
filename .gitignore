@@ -3,6 +3,9 @@
 main
 mailripper
 
+#Save script
+save.sh
+
 # Binaries for programs and plugins
 *.exe
 *.exe~

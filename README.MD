@@ -8,7 +8,7 @@ Thats are ip address for SMTP connection
 Port (you can use diffirent)
 
 ### --file=file
-File with usernames like
+File with usernames, example:
 
 user
 

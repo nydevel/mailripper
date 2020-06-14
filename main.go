@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"log"
@@ -32,5 +33,7 @@ func main() {
 	}
 	fmt.Println("Port is open, lets try to send VRFY command")
 	fmt.Fprintf(conn, "VRFY %s", paramUsername)
+	status, err := bufio.NewReader(conn).ReadString("\n")
+	fmt.Ptintln(status)
 	conn.Close()
 }

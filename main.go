@@ -6,19 +6,19 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"time"
+	"os"
 )
 
 var paramIP string
 var paramPort int
 var paramTimeout int
-var paramUsername string
+var paramFile string
 
 func init() {
 	flag.StringVar(&paramIP, "ip", "127.0.0.1", "Please set ip address for connection, default is 127.0.0.1")
 	flag.IntVar(&paramPort, "port", 25, "Default port is 25")
 	flag.IntVar(&paramTimeout, "timeout", 500, "Timeout in ms")
-	flag.StringVar(&paramUsername, "username", "user", "Default username is user")
+	flag.StringVar(&paramFile, "file", "file", "Filename with usernames")
 }
 
 func main() {
@@ -26,19 +26,36 @@ func main() {
 
 	target := fmt.Sprintf("%s:%d", paramIP, paramPort)
 
-	conn, err := net.DialTimeout("tcp", target, time.Duration(paramTimeout)*time.Millisecond)
+	conn, err := net.Dial("tcp", target)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	//If connection is fine, read and print banner
-	banner, err := bufio.NewReader(conn).ReadString('\n')
+	banner, _ := bufio.NewReader(conn).ReadString('\n')
 	fmt.Println(banner)
 
-	//Try to verify user existence
-	conn.Write([]byte("VRFY " + paramUsername + "\n"))
-	status, err := bufio.NewReader(conn).ReadString('\n')
-	fmt.Println(status)
+	file, err := os.Open(paramFile)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+
+		//Try to verify user existence
+		checkUsername(scanner.Text(), conn)
+	}
 	conn.Close()
+}
+
+// checkUsername
+// Send VRFY username command to server for username checking
+func checkUsername(name string, conn net.Conn) {
+	conn.Write([]byte("VRFY " + name + "\n"))
+	status, _ := bufio.NewReader(conn).ReadString('\n')
+	fmt.Println(status)
 }
